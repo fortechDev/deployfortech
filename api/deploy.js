@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -40,19 +42,24 @@ export default async function handler(req, res) {
       });
     }
 
-    if (html.length > 5 * 1024 * 1024) {
+    const fileBuffer = Buffer.from(html, "utf8");
+    const fileSize = fileBuffer.length;
+
+    if (fileSize > 5 * 1024 * 1024) {
       return res.status(413).json({
         success: false,
         message: "HTML maksimal 5 MB."
       });
     }
 
-    /*
-     * 1. Pastikan project Vercel tersedia.
-     */
+    // ==========================================
+    // 1. CEK PROJECT
+    // ==========================================
 
     const projectResponse = await fetch(
-      `https://api.vercel.com/v9/projects/${encodeURIComponent(projectName)}`,
+      `https://api.vercel.com/v9/projects/${encodeURIComponent(
+        projectName
+      )}`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -64,9 +71,15 @@ export default async function handler(req, res) {
 
     if (projectResponse.ok) {
       project = await projectResponse.json();
+
     } else if (projectResponse.status === 404) {
+
+      // ==========================================
+      // 2. BUAT PROJECT JIKA BELUM ADA
+      // ==========================================
+
       const createProjectResponse = await fetch(
-        "https://api.vercel.com/v10/projects",
+        "https://api.vercel.com/v9/projects",
         {
           method: "POST",
           headers: {
@@ -91,8 +104,19 @@ export default async function handler(req, res) {
         });
       }
 
-      project = JSON.parse(createText);
+      try {
+        project = JSON.parse(createText);
+      } catch {
+        return res.status(500).json({
+          success: false,
+          stage: "create-project",
+          message: "Response project tidak valid.",
+          details: createText
+        });
+      }
+
     } else {
+
       const errorText =
         await projectResponse.text();
 
@@ -104,12 +128,18 @@ export default async function handler(req, res) {
       });
     }
 
-    /*
-     * 2. Upload index.html.
-     */
+    // ==========================================
+    // 3. BUAT SHA256 FILE
+    // ==========================================
 
-    const fileBuffer =
-      new TextEncoder().encode(html);
+    const sha = crypto
+      .createHash("sha1")
+      .update(fileBuffer)
+      .digest("hex");
+
+    // ==========================================
+    // 4. UPLOAD FILE KE VERCEL
+    // ==========================================
 
     const uploadResponse = await fetch(
       "https://api.vercel.com/v2/files",
@@ -117,7 +147,8 @@ export default async function handler(req, res) {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "text/html"
+          "Content-Type": "text/html",
+          "x-vercel-digest": sha
         },
         body: fileBuffer
       }
@@ -135,17 +166,9 @@ export default async function handler(req, res) {
       });
     }
 
-    let uploadData;
-
-    try {
-      uploadData = JSON.parse(uploadText);
-    } catch {
-      uploadData = {};
-    }
-
-    /*
-     * 3. Buat deployment.
-     */
+    // ==========================================
+    // 5. BUAT DEPLOYMENT
+    // ==========================================
 
     const deploymentResponse = await fetch(
       "https://api.vercel.com/v13/deployments",
@@ -157,16 +180,22 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           name: projectName,
+
           project: project.id,
 
           files: [
             {
               file: "index.html",
-              data: uploadData
+              sha: sha,
+              size: fileSize
             }
           ],
 
-          target: "production"
+          target: "production",
+
+          projectSettings: {
+            framework: null
+          }
         })
       }
     );
@@ -194,9 +223,9 @@ export default async function handler(req, res) {
       });
     }
 
-    /*
-     * 4. Hasil deployment.
-     */
+    // ==========================================
+    // 6. HASIL
+    // ==========================================
 
     const deploymentUrl =
       deployment.url
@@ -206,17 +235,24 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       message: "Deployment berhasil.",
+
       projectName,
+
       deploymentId:
         deployment.id || null,
-      url: deploymentUrl,
-      alias:
-        deployment.alias || [],
+
+      url:
+        deploymentUrl,
+
       projectId:
-        project.id || null
+        project.id || null,
+
+      state:
+        deployment.readyState || null
     });
 
   } catch (error) {
+
     console.error(error);
 
     return res.status(500).json({
@@ -226,6 +262,3 @@ export default async function handler(req, res) {
     });
   }
 }
-
-
-
