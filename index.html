@@ -1,0 +1,4365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#080a0f">
+<meta name="description" content="4TECH DEPLOYERS - Fast HTML Deployment Platform">
+<title>4TECH DEPLOYERS</title>
+
+<style>
+/* =========================================================
+   4TECH DEPLOYERS V2
+   FRONTEND PROTOTYPE
+   ========================================================= */
+
+:root{
+    --bg:#07090d;
+    --bg2:#0b0e13;
+    --panel:#10141b;
+    --panel2:#141922;
+    --panel3:#181e28;
+    --border:#242c38;
+    --border2:#303b4b;
+    --text:#f4f7fb;
+    --muted:#8993a3;
+    --blue:#278cff;
+    --blue2:#55a9ff;
+    --blue3:#0d6fdc;
+    --green:#24d17e;
+    --red:#ff4d67;
+    --yellow:#ffca3a;
+    --shadow:0 20px 60px rgba(0,0,0,.42);
+    --radius:18px;
+    --radius2:12px;
+    --transition:.25s ease;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    min-height:100vh;
+    background:
+        radial-gradient(circle at 20% 10%,rgba(39,140,255,.08),transparent 30%),
+        radial-gradient(circle at 90% 80%,rgba(39,140,255,.05),transparent 35%),
+        var(--bg);
+    color:var(--text);
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    overflow-x:hidden;
+}
+
+button,
+input,
+textarea,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+a{
+    color:inherit;
+    text-decoration:none;
+}
+
+.hidden{
+    display:none!important;
+}
+
+.fade{
+    animation:fade .35s ease both;
+}
+
+@keyframes fade{
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@keyframes pulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(39,140,255,.25)}
+    50%{box-shadow:0 0 0 10px rgba(39,140,255,0)}
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+@keyframes float{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-7px)}
+}
+
+@keyframes scan{
+    0%{transform:translateY(-100%)}
+    100%{transform:translateY(100vh)}
+}
+
+@keyframes glow{
+    0%,100%{opacity:.3}
+    50%{opacity:.8}
+}
+
+.bg-grid{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.12;
+    background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+    background-size:42px 42px;
+    mask-image:linear-gradient(to bottom,black,transparent);
+}
+
+.bg-orb{
+    position:fixed;
+    width:320px;
+    height:320px;
+    border-radius:50%;
+    filter:blur(100px);
+    opacity:.12;
+    pointer-events:none;
+    background:#1687ff;
+    top:-100px;
+    right:-100px;
+    animation:float 8s ease-in-out infinite;
+}
+
+.bg-orb.two{
+    top:auto;
+    right:auto;
+    bottom:-140px;
+    left:-100px;
+    animation-delay:2s;
+}
+
+/* =========================================================
+   AUTH
+   ========================================================= */
+
+#authScreen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:22px;
+    position:relative;
+}
+
+.auth-wrap{
+    width:min(460px,100%);
+    position:relative;
+    z-index:2;
+}
+
+.brand{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.brand-logo{
+    width:68px;
+    height:68px;
+    margin:0 auto 15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #315c88;
+    border-radius:20px;
+    background:linear-gradient(145deg,#151d28,#0a0d12);
+    box-shadow:0 0 35px rgba(39,140,255,.12);
+    animation:pulse 3s infinite;
+}
+
+.brand-logo span{
+    font-size:27px;
+    font-weight:900;
+    color:var(--blue2);
+}
+
+.brand h1{
+    font-size:27px;
+    letter-spacing:2px;
+    font-weight:900;
+}
+
+.brand p{
+    color:var(--muted);
+    margin-top:6px;
+    font-size:13px;
+}
+
+.auth-card{
+    background:rgba(16,20,27,.94);
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:25px;
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(20px);
+}
+
+.auth-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5px;
+    padding:5px;
+    background:#090c11;
+    border:1px solid var(--border);
+    border-radius:13px;
+    margin-bottom:22px;
+}
+
+.auth-tab{
+    border:0;
+    background:transparent;
+    color:var(--muted);
+    padding:11px;
+    border-radius:9px;
+    transition:var(--transition);
+    font-weight:700;
+}
+
+.auth-tab.active{
+    background:#18202c;
+    color:#fff;
+}
+
+.form-group{
+    margin-bottom:16px;
+}
+
+.form-label{
+    display:block;
+    margin-bottom:7px;
+    color:#cbd3df;
+    font-size:13px;
+    font-weight:700;
+}
+
+.input-wrap{
+    position:relative;
+}
+
+.input{
+    width:100%;
+    border:1px solid var(--border);
+    background:#0a0e14;
+    color:#fff;
+    outline:none;
+    padding:13px 14px;
+    border-radius:12px;
+    transition:var(--transition);
+}
+
+.input:focus{
+    border-color:var(--blue);
+    box-shadow:0 0 0 3px rgba(39,140,255,.09);
+}
+
+.password-toggle{
+    position:absolute;
+    right:8px;
+    top:50%;
+    transform:translateY(-50%);
+    background:#151b24;
+    border:1px solid var(--border);
+    color:#aeb8c8;
+    border-radius:8px;
+    padding:5px 8px;
+}
+
+.primary-btn{
+    width:100%;
+    border:1px solid #328fe8;
+    background:linear-gradient(135deg,#1677db,#258fff);
+    color:#fff;
+    padding:13px 16px;
+    border-radius:12px;
+    font-weight:800;
+    transition:var(--transition);
+}
+
+.primary-btn:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.08);
+}
+
+.primary-btn:active{
+    transform:scale(.98);
+}
+
+.secondary-btn{
+    border:1px solid var(--border2);
+    background:#111720;
+    color:#dfe6f0;
+    padding:12px 15px;
+    border-radius:11px;
+    font-weight:700;
+    transition:var(--transition);
+}
+
+.secondary-btn:hover{
+    background:#171f2a;
+    border-color:#3d4c61;
+}
+
+.auth-note{
+    margin-top:15px;
+    text-align:center;
+    color:#687486;
+    font-size:11px;
+    line-height:1.5;
+}
+
+.message{
+    padding:11px 13px;
+    border-radius:10px;
+    font-size:12px;
+    margin-bottom:15px;
+    display:none;
+}
+
+.message.show{
+    display:block;
+}
+
+.message.error{
+    background:rgba(255,77,103,.08);
+    border:1px solid rgba(255,77,103,.25);
+    color:#ff8294;
+}
+
+.message.success{
+    background:rgba(36,209,126,.08);
+    border:1px solid rgba(36,209,126,.25);
+    color:#65e5a5;
+}
+
+/* =========================================================
+   APP
+   ========================================================= */
+
+#app{
+    min-height:100vh;
+}
+
+.topbar{
+    height:70px;
+    position:sticky;
+    top:0;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 22px;
+    background:rgba(7,9,13,.82);
+    border-bottom:1px solid var(--border);
+    backdrop-filter:blur(18px);
+}
+
+.top-brand{
+    display:flex;
+    align-items:center;
+    gap:11px;
+}
+
+.top-logo{
+    width:38px;
+    height:38px;
+    border-radius:11px;
+    border:1px solid #2d5c8d;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#5db1ff;
+    background:#0d141d;
+    font-weight:900;
+}
+
+.top-title{
+    font-weight:900;
+    letter-spacing:1.3px;
+}
+
+.top-sub{
+    color:#687486;
+    font-size:10px;
+    margin-top:2px;
+}
+
+.top-actions{
+    display:flex;
+    align-items:center;
+    gap:9px;
+}
+
+.icon-btn{
+    width:40px;
+    height:40px;
+    border-radius:11px;
+    border:1px solid var(--border);
+    background:#0e131a;
+    color:#cbd5e2;
+}
+
+.user-pill{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:7px 10px;
+    border:1px solid var(--border);
+    background:#0e131a;
+    border-radius:12px;
+}
+
+.avatar{
+    width:30px;
+    height:30px;
+    border-radius:9px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#182333;
+    color:#5dafff;
+    font-weight:900;
+    font-size:12px;
+}
+
+.user-info strong{
+    display:block;
+    font-size:11px;
+}
+
+.user-info small{
+    color:#697587;
+    font-size:9px;
+}
+
+.layout{
+    display:flex;
+    min-height:calc(100vh - 70px);
+}
+
+.sidebar{
+    width:235px;
+    flex:none;
+    border-right:1px solid var(--border);
+    background:rgba(9,12,17,.72);
+    padding:18px 13px;
+}
+
+.nav-label{
+    color:#505b6b;
+    font-size:9px;
+    letter-spacing:1.6px;
+    font-weight:900;
+    padding:0 10px;
+    margin:8px 0 8px;
+}
+
+.nav-item{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    color:#8e99aa;
+    padding:11px 12px;
+    border-radius:11px;
+    display:flex;
+    align-items:center;
+    gap:11px;
+    margin-bottom:4px;
+    text-align:left;
+    font-weight:700;
+    font-size:12px;
+    transition:var(--transition);
+}
+
+.nav-item:hover{
+    background:#111720;
+    color:#dce5f0;
+}
+
+.nav-item.active{
+    background:#101d2c;
+    border-color:#214d77;
+    color:#58aaff;
+}
+
+.nav-icon{
+    width:20px;
+    text-align:center;
+    font-size:15px;
+}
+
+.main{
+    flex:1;
+    min-width:0;
+    padding:25px;
+}
+
+.page{
+    max-width:1250px;
+    margin:auto;
+}
+
+.page-head{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:22px;
+}
+
+.page-head h2{
+    font-size:25px;
+    font-weight:900;
+}
+
+.page-head p{
+    margin-top:5px;
+    color:#717d8e;
+    font-size:12px;
+}
+
+.status-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    padding:7px 10px;
+    border-radius:999px;
+    border:1px solid #234d73;
+    background:#0e1924;
+    color:#60b0ff;
+    font-size:10px;
+    font-weight:800;
+}
+
+.dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 10px rgba(36,209,126,.8);
+}
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:13px;
+    margin-bottom:18px;
+}
+
+.stat-card{
+    background:linear-gradient(145deg,#11161e,#0d1117);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:17px;
+    position:relative;
+    overflow:hidden;
+}
+
+.stat-card::after{
+    content:"";
+    position:absolute;
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background:rgba(39,140,255,.07);
+    right:-45px;
+    bottom:-45px;
+}
+
+.stat-top{
+    display:flex;
+    justify-content:space-between;
+    color:#748094;
+    font-size:10px;
+    font-weight:800;
+    text-transform:uppercase;
+}
+
+.stat-value{
+    font-size:27px;
+    font-weight:900;
+    margin-top:9px;
+}
+
+.stat-extra{
+    color:#667284;
+    font-size:10px;
+    margin-top:5px;
+}
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:1.4fr .8fr;
+    gap:15px;
+}
+
+.panel{
+    background:#10141b;
+    border:1px solid var(--border);
+    border-radius:18px;
+    overflow:hidden;
+}
+
+.panel-head{
+    padding:17px 18px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.panel-title{
+    font-weight:850;
+    font-size:13px;
+}
+
+.panel-sub{
+    color:#697586;
+    font-size:10px;
+    margin-top:3px;
+}
+
+.panel-body{
+    padding:18px;
+}
+
+.quick-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+}
+
+.quick-btn{
+    min-height:100px;
+    border:1px solid var(--border);
+    background:#0c1016;
+    color:#cbd4df;
+    border-radius:14px;
+    text-align:left;
+    padding:15px;
+    transition:var(--transition);
+}
+
+.quick-btn:hover{
+    transform:translateY(-2px);
+    border-color:#315d86;
+    background:#111923;
+}
+
+.quick-icon{
+    font-size:21px;
+    margin-bottom:12px;
+}
+
+.quick-title{
+    font-size:12px;
+    font-weight:800;
+}
+
+.quick-desc{
+    color:#687486;
+    font-size:9px;
+    margin-top:4px;
+}
+
+.activity-list{
+    display:flex;
+    flex-direction:column;
+}
+
+.activity{
+    display:flex;
+    gap:10px;
+    padding:12px 0;
+    border-bottom:1px solid #1a2029;
+}
+
+.activity:last-child{
+    border-bottom:0;
+}
+
+.activity-icon{
+    width:30px;
+    height:30px;
+    border-radius:9px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#131d29;
+    color:#58aaff;
+}
+
+.activity-content{
+    flex:1;
+    min-width:0;
+}
+
+.activity-content strong{
+    display:block;
+    font-size:11px;
+}
+
+.activity-content span{
+    color:#687486;
+    font-size:9px;
+}
+
+/* =========================================================
+   DEPLOY
+   ========================================================= */
+
+.deploy-layout{
+    display:grid;
+    grid-template-columns:1.25fr .75fr;
+    gap:15px;
+}
+
+.form-card{
+    background:#10141b;
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+}
+
+.section-title{
+    font-size:14px;
+    font-weight:900;
+    margin-bottom:4px;
+}
+
+.section-desc{
+    color:#697586;
+    font-size:10px;
+    margin-bottom:18px;
+}
+
+.deploy-input{
+    margin-bottom:15px;
+}
+
+.deploy-input label{
+    display:block;
+    font-size:11px;
+    font-weight:800;
+    color:#c8d0dc;
+    margin-bottom:7px;
+}
+
+.deploy-input small{
+    display:block;
+    color:#596575;
+    font-size:9px;
+    margin-top:6px;
+}
+
+.domain-box{
+    display:flex;
+    align-items:stretch;
+}
+
+.domain-box .input{
+    border-radius:11px 0 0 11px;
+}
+
+.domain-suffix{
+    display:flex;
+    align-items:center;
+    background:#161c25;
+    border:1px solid var(--border);
+    border-left:0;
+    border-radius:0 11px 11px 0;
+    padding:0 12px;
+    color:#718095;
+    font-size:10px;
+    white-space:nowrap;
+}
+
+.file-actions{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+}
+
+.file-btn{
+    min-height:78px;
+    border:1px dashed #354151;
+    background:#0c1016;
+    border-radius:12px;
+    color:#8d99aa;
+    padding:10px;
+    transition:var(--transition);
+}
+
+.file-btn:hover{
+    border-color:#3975aa;
+    color:#cbd8e8;
+    background:#111923;
+}
+
+.file-btn strong{
+    display:block;
+    color:#dce4ef;
+    font-size:10px;
+    margin-top:5px;
+}
+
+.file-btn span{
+    font-size:8px;
+}
+
+textarea.code-area{
+    width:100%;
+    min-height:250px;
+    resize:vertical;
+    border:1px solid var(--border);
+    background:#080b10;
+    color:#b8d8f7;
+    padding:13px;
+    border-radius:12px;
+    outline:none;
+    font-family:"Courier New",monospace;
+    font-size:11px;
+    line-height:1.55;
+}
+
+textarea.code-area:focus{
+    border-color:#2b78b9;
+}
+
+.deploy-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-top:16px;
+}
+
+.token-warning{
+    color:#7d8999;
+    font-size:9px;
+    line-height:1.4;
+}
+
+.deploy-button{
+    min-width:150px;
+    border:1px solid #348fe7;
+    background:linear-gradient(135deg,#1168c0,#248dff);
+    color:white;
+    padding:13px 17px;
+    border-radius:11px;
+    font-weight:900;
+}
+
+.deploy-button:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+}
+
+.preview-box{
+    background:#090c11;
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+}
+
+.preview-head{
+    height:37px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:0 12px;
+}
+
+.browser-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#303945;
+}
+
+.preview-url{
+    margin-left:6px;
+    color:#596576;
+    font-size:8px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.preview-content{
+    height:400px;
+    background:white;
+    position:relative;
+}
+
+.preview-content iframe{
+    width:100%;
+    height:100%;
+    border:0;
+}
+
+/* =========================================================
+   HISTORY
+   ========================================================= */
+
+.history-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.history-table th{
+    text-align:left;
+    color:#657183;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+    padding:12px;
+    border-bottom:1px solid var(--border);
+}
+
+.history-table td{
+    padding:13px 12px;
+    border-bottom:1px solid #1b212b;
+    font-size:11px;
+    color:#cbd4df;
+}
+
+.history-table tr:last-child td{
+    border-bottom:0;
+}
+
+.project-name{
+    font-weight:800;
+}
+
+.project-url{
+    color:#579fe5;
+    font-size:9px;
+    margin-top:3px;
+}
+
+.status{
+    display:inline-flex;
+    padding:5px 8px;
+    border-radius:999px;
+    font-size:8px;
+    font-weight:900;
+}
+
+.status.success{
+    color:#5be19a;
+    background:rgba(36,209,126,.08);
+    border:1px solid rgba(36,209,126,.18);
+}
+
+.status.preview{
+    color:#64b2ff;
+    background:rgba(39,140,255,.08);
+    border:1px solid rgba(39,140,255,.18);
+}
+
+/* =========================================================
+   ADMIN
+   ========================================================= */
+
+.admin-banner{
+    border:1px solid #28577e;
+    background:linear-gradient(135deg,#0e1b29,#0d141c);
+    padding:16px;
+    border-radius:15px;
+    margin-bottom:16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+}
+
+.admin-banner strong{
+    display:block;
+    font-size:13px;
+}
+
+.admin-banner span{
+    color:#6d8198;
+    font-size:9px;
+}
+
+.admin-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:13px;
+}
+
+.admin-stat{
+    border:1px solid var(--border);
+    background:#10151d;
+    border-radius:15px;
+    padding:17px;
+}
+
+.admin-stat-label{
+    color:#718094;
+    font-size:9px;
+    text-transform:uppercase;
+    font-weight:900;
+}
+
+.admin-stat-value{
+    font-size:25px;
+    font-weight:900;
+    margin-top:7px;
+}
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+
+.settings-list{
+    display:flex;
+    flex-direction:column;
+}
+
+.setting{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    padding:16px 0;
+    border-bottom:1px solid #1c222b;
+}
+
+.setting:last-child{
+    border-bottom:0;
+}
+
+.setting-title{
+    font-size:11px;
+    font-weight:800;
+}
+
+.setting-desc{
+    color:#657183;
+    font-size:9px;
+    margin-top:4px;
+}
+
+.switch{
+    width:43px;
+    height:24px;
+    background:#202833;
+    border:1px solid #35404e;
+    border-radius:99px;
+    padding:2px;
+    transition:var(--transition);
+}
+
+.switch span{
+    display:block;
+    width:18px;
+    height:18px;
+    background:#788596;
+    border-radius:50%;
+    transition:var(--transition);
+}
+
+.switch.on{
+    background:#155e9f;
+    border-color:#2689d7;
+}
+
+.switch.on span{
+    transform:translateX(18px);
+    background:#fff;
+}
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+.empty{
+    text-align:center;
+    padding:45px 20px;
+    color:#596576;
+}
+
+.empty-icon{
+    font-size:28px;
+    opacity:.5;
+    margin-bottom:10px;
+}
+
+.empty strong{
+    display:block;
+    color:#8793a4;
+    font-size:12px;
+}
+
+.empty span{
+    font-size:9px;
+}
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(0,0,0,.7);
+    backdrop-filter:blur(8px);
+}
+
+.modal-card{
+    width:min(480px,100%);
+    background:#11161e;
+    border:1px solid var(--border2);
+    border-radius:19px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    animation:fade .2s ease;
+}
+
+.modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:16px 18px;
+    border-bottom:1px solid var(--border);
+}
+
+.modal-head strong{
+    font-size:13px;
+}
+
+.close-btn{
+    width:31px;
+    height:31px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:#0b0f14;
+    color:#aab4c2;
+}
+
+.modal-body{
+    padding:18px;
+}
+
+.deploy-result{
+    background:#080c11;
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:15px;
+}
+
+.result-line{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    padding:8px 0;
+    border-bottom:1px solid #181e27;
+    font-size:10px;
+}
+
+.result-line:last-child{
+    border-bottom:0;
+}
+
+.result-line span:first-child{
+    color:#687587;
+}
+
+.result-line span:last-child{
+    color:#d7e1ed;
+    text-align:right;
+    word-break:break-all;
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+#toastContainer{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    z-index:200;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    width:min(350px,calc(100vw - 36px));
+}
+
+.toast{
+    background:#121821;
+    border:1px solid #293443;
+    border-radius:13px;
+    padding:12px 14px;
+    box-shadow:0 15px 40px rgba(0,0,0,.4);
+    animation:fade .25s ease;
+}
+
+.toast strong{
+    display:block;
+    font-size:11px;
+}
+
+.toast span{
+    display:block;
+    color:#758194;
+    font-size:9px;
+    margin-top:3px;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+.mobile-menu{
+    display:none;
+}
+
+@media(max-width:900px){
+    .sidebar{
+        position:fixed;
+        z-index:60;
+        top:70px;
+        bottom:0;
+        left:-250px;
+        transition:.25s ease;
+        box-shadow:20px 0 60px rgba(0,0,0,.4);
+    }
+
+    .sidebar.open{
+        left:0;
+    }
+
+    .mobile-menu{
+        display:block;
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .dashboard-grid,
+    .deploy-layout{
+        grid-template-columns:1fr;
+    }
+
+    .admin-grid{
+        grid-template-columns:1fr 1fr 1fr;
+    }
+}
+
+@media(max-width:620px){
+    .topbar{
+        padding:0 12px;
+    }
+
+    .top-sub{
+        display:none;
+    }
+
+    .user-info{
+        display:none;
+    }
+
+    .user-pill{
+        padding:4px;
+        border:0;
+        background:transparent;
+    }
+
+    .main{
+        padding:17px 12px 30px;
+    }
+
+    .page-head{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .page-head h2{
+        font-size:21px;
+    }
+
+    .stats{
+        gap:8px;
+    }
+
+    .stat-card{
+        padding:13px;
+    }
+
+    .stat-value{
+        font-size:22px;
+    }
+
+    .quick-grid{
+        grid-template-columns:1fr;
+    }
+
+    .file-actions{
+        grid-template-columns:1fr;
+    }
+
+    .deploy-bottom{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .deploy-button{
+        width:100%;
+    }
+
+    .domain-box{
+        display:block;
+    }
+
+    .domain-box .input{
+        border-radius:11px;
+    }
+
+    .domain-suffix{
+        margin-top:5px;
+        border-left:1px solid var(--border);
+        border-radius:10px;
+        min-height:37px;
+    }
+
+    .history-wrap{
+        overflow-x:auto;
+    }
+
+    .history-table{
+        min-width:650px;
+    }
+
+    .admin-grid{
+        grid-template-columns:1fr;
+    }
+
+    .admin-banner{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .auth-card{
+        padding:19px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb"></div>
+<div class="bg-orb two"></div>
+
+<!-- =======================================================
+     AUTH SCREEN
+     ======================================================= -->
+
+<section id="authScreen">
+
+    <div class="auth-wrap">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                <span>4T</span>
+            </div>
+
+            <h1>4TECH DEPLOYERS</h1>
+
+            <p>Fast HTML Deployment Platform</p>
+
+        </div>
+
+        <div class="auth-card">
+
+            <div class="auth-tabs">
+
+                <button
+                    class="auth-tab active"
+                    id="loginTab"
+                    onclick="switchAuth('login')">
+                    LOGIN
+                </button>
+
+                <button
+                    class="auth-tab"
+                    id="registerTab"
+                    onclick="switchAuth('register')">
+                    REGISTER
+                </button>
+
+            </div>
+
+            <div
+                id="authMessage"
+                class="message">
+            </div>
+
+            <!-- LOGIN -->
+
+            <form
+                id="loginForm"
+                onsubmit="handleLogin(event)">
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Username / Gmail
+                    </label>
+
+                    <input
+                        id="loginIdentity"
+                        class="input"
+                        type="text"
+                        autocomplete="username"
+                        placeholder="Masukkan username atau Gmail"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Password
+                    </label>
+
+                    <div class="input-wrap">
+
+                        <input
+                            id="loginPassword"
+                            class="input"
+                            type="password"
+                            autocomplete="current-password"
+                            placeholder="Masukkan password"
+                            required>
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword('loginPassword',this)">
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="primary-btn"
+                    type="submit">
+                    MASUK
+                </button>
+
+            </form>
+
+            <!-- REGISTER -->
+
+            <form
+                id="registerForm"
+                class="hidden"
+                onsubmit="handleRegister(event)">
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Nama
+                    </label>
+
+                    <input
+                        id="registerName"
+                        class="input"
+                        type="text"
+                        placeholder="Nama kamu"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Gmail
+                    </label>
+
+                    <input
+                        id="registerEmail"
+                        class="input"
+                        type="email"
+                        placeholder="nama@gmail.com"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Buat Password
+                    </label>
+
+                    <div class="input-wrap">
+
+                        <input
+                            id="registerPassword"
+                            class="input"
+                            type="password"
+                            placeholder="Minimal 6 karakter"
+                            minlength="6"
+                            required>
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword('registerPassword',this)">
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="primary-btn"
+                    type="submit">
+                    BUAT AKUN
+                </button>
+
+            </form>
+
+            <div class="auth-note">
+                Frontend prototype • Deployment asli akan menggunakan backend/API.
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- =======================================================
+     APPLICATION
+     ======================================================= -->
+
+<section
+    id="app"
+    class="hidden">
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div class="top-brand">
+
+            <button
+                class="icon-btn mobile-menu"
+                onclick="toggleSidebar()">
+                ☰
+            </button>
+
+            <div class="top-logo">
+                4T
+            </div>
+
+            <div>
+                <div class="top-title">
+                    4TECH DEPLOYERS
+                </div>
+
+                <div class="top-sub">
+                    DEPLOY • MANAGE • BUILD
+                </div>
+            </div>
+
+        </div>
+
+        <div class="top-actions">
+
+            <div class="user-pill">
+
+                <div
+                    id="avatar"
+                    class="avatar">
+                    U
+                </div>
+
+                <div class="user-info">
+
+                    <strong id="topUsername">
+                        User
+                    </strong>
+
+                    <small id="topRole">
+                        USER
+                    </small>
+
+                </div>
+
+            </div>
+
+            <button
+                class="icon-btn"
+                onclick="logout()"
+                title="Logout">
+                ↪
+            </button>
+
+        </div>
+
+    </header>
+
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+
+        <aside
+            id="sidebar"
+            class="sidebar">
+
+            <div class="nav-label">
+                MAIN
+            </div>
+
+            <button
+                class="nav-item active"
+                data-page="dashboard"
+                onclick="showPage('dashboard')">
+
+                <span class="nav-icon">⌂</span>
+                Dashboard
+
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="deploy"
+                onclick="showPage('deploy')">
+
+                <span class="nav-icon">↥</span>
+                Deploy
+
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="history"
+                onclick="showPage('history')">
+
+                <span class="nav-icon">◷</span>
+                History
+
+            </button>
+
+            <div class="nav-label">
+                ACCOUNT
+            </div>
+
+            <button
+                class="nav-item"
+                data-page="settings"
+                onclick="showPage('settings')">
+
+                <span class="nav-icon">⚙</span>
+                Settings
+
+            </button>
+
+            <button
+                id="adminNav"
+                class="nav-item hidden"
+                data-page="admin"
+                onclick="showPage('admin')">
+
+                <span class="nav-icon">◆</span>
+                Admin
+
+            </button>
+
+        </aside>
+
+        <!-- MAIN -->
+
+        <main class="main">
+
+            <div class="page">
+
+                <!-- DASHBOARD -->
+
+                <section
+                    id="page-dashboard"
+                    class="page-section fade">
+
+                    <div class="page-head">
+
+                        <div>
+
+                            <h2>
+                                Dashboard
+                            </h2>
+
+                            <p>
+                                Kelola deployment kamu dari satu tempat.
+                            </p>
+
+                        </div>
+
+                        <div class="status-badge">
+                            <span class="dot"></span>
+                            SYSTEM ONLINE
+                        </div>
+
+                    </div>
+
+                    <div class="stats">
+
+                        <div class="stat-card">
+
+                            <div class="stat-top">
+                                <span>Tokens</span>
+                                <span>◈</span>
+                            </div>
+
+                            <div
+                                id="statTokens"
+                                class="stat-value">
+                                3
+                            </div>
+
+                            <div
+                                id="statTokenText"
+                                class="stat-extra">
+                                Token tersedia
+                            </div>
+
+                        </div>
+
+                        <div class="stat-card">
+
+                            <div class="stat-top">
+                                <span>Deployments</span>
+                                <span>↥</span>
+                            </div>
+
+                            <div
+                                id="statDeploys"
+                                class="stat-value">
+                                0
+                            </div>
+
+                            <div class="stat-extra">
+                                Total deployment
+                            </div>
+
+                        </div>
+
+                        <div class="stat-card">
+
+                            <div class="stat-top">
+                                <span>Projects</span>
+                                <span>▣</span>
+                            </div>
+
+                            <div
+                                id="statProjects"
+                                class="stat-value">
+                                0
+                            </div>
+
+                            <div class="stat-extra">
+                                Project tersimpan
+                            </div>
+
+                        </div>
+
+                        <div class="stat-card">
+
+                            <div class="stat-top">
+                                <span>Account</span>
+                                <span>●</span>
+                            </div>
+
+                            <div
+                                id="statRole"
+                                class="stat-value"
+                                style="font-size:20px">
+                                USER
+                            </div>
+
+                            <div class="stat-extra">
+                                Account status
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="dashboard-grid">
+
+                        <div class="panel">
+
+                            <div class="panel-head">
+
+                                <div>
+
+                                    <div class="panel-title">
+                                        Quick Actions
+                                    </div>
+
+                                    <div class="panel-sub">
+                                        Mulai sesuatu dengan cepat.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="panel-body">
+
+                                <div class="quick-grid">
+
+                                    <button
+                                        class="quick-btn"
+                                        onclick="showPage('deploy')">
+
+                                        <div class="quick-icon">
+                                            ↥
+                                        </div>
+
+                                        <div class="quick-title">
+                                            New Deployment
+                                        </div>
+
+                                        <div class="quick-desc">
+                                            Deploy project HTML baru.
+                                        </div>
+
+                                    </button>
+
+                                    <button
+                                        class="quick-btn"
+                                        onclick="showPage('history')">
+
+                                        <div class="quick-icon">
+                                            ◷
+                                        </div>
+
+                                        <div class="quick-title">
+                                            Deployment History
+                                        </div>
+
+                                        <div class="quick-desc">
+                                            Lihat project yang pernah dibuat.
+                                        </div>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="panel">
+
+                            <div class="panel-head">
+
+                                <div>
+
+                                    <div class="panel-title">
+                                        Recent Activity
+                                    </div>
+
+                                    <div class="panel-sub">
+                                        Aktivitas terbaru.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div
+                                id="activityList"
+                                class="panel-body">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- DEPLOY -->
+
+                <section
+                    id="page-deploy"
+                    class="page-section hidden fade">
+
+                    <div class="page-head">
+
+                        <div>
+
+                            <h2>
+                                New Deployment
+                            </h2>
+
+                            <p>
+                                Buat project HTML dan siapkan subdomain kamu.
+                            </p>
+
+                        </div>
+
+                        <div class="status-badge">
+                            FRONTEND MODE
+                        </div>
+
+                    </div>
+
+                    <div class="deploy-layout">
+
+                        <div class="form-card">
+
+                            <div class="section-title">
+                                Deployment Configuration
+                            </div>
+
+                            <div class="section-desc">
+                                Masukkan nama project lalu pilih sumber HTML.
+                            </div>
+
+                            <div class="deploy-input">
+
+                                <label>
+                                    Project / Subdomain Name
+                                </label>
+
+                                <div class="domain-box">
+
+                                    <input
+                                        id="projectName"
+                                        class="input"
+                                        type="text"
+                                        maxlength="40"
+                                        placeholder="contoh: mywebsite"
+                                        oninput="updateDomainPreview()">
+
+                                    <div
+                                        id="domainSuffix"
+                                        class="domain-suffix">
+                                        .4tech.web.id
+                                    </div>
+
+                                </div>
+
+                                <small>
+                                    Hanya huruf kecil, angka, dan tanda minus.
+                                </small>
+
+                            </div>
+
+                            <div class="deploy-input">
+
+                                <label>
+                                    Source HTML
+                                </label>
+
+                                <div class="file-actions">
+
+                                    <button
+                                        class="file-btn"
+                                        type="button"
+                                        onclick="document.getElementById('htmlFile').click()">
+
+                                        <div>
+                                            📄
+                                        </div>
+
+                                        <strong>
+                                            HTML File
+                                        </strong>
+
+                                        <span>
+                                            Pilih file .html
+                                        </span>
+
+                                    </button>
+
+                                    <button
+                                        class="file-btn"
+                                        type="button"
+                                        onclick="document.getElementById('folderInput').click()">
+
+                                        <div>
+                                            📁
+                                        </div>
+
+                                        <strong>
+                                            Folder
+                                        </strong>
+
+                                        <span>
+                                            Pilih folder project
+                                        </span>
+
+                                    </button>
+
+                                    <button
+                                        class="file-btn"
+                                        type="button"
+                                        onclick="clearCode()">
+
+                                        <div>
+                                            ✕
+                                        </div>
+
+                                        <strong>
+                                            Clear
+                                        </strong>
+
+                                        <span>
+                                            Bersihkan editor
+                                        </span>
+
+                                    </button>
+
+                                </div>
+
+                                <input
+                                    id="htmlFile"
+                                    type="file"
+                                    accept=".html,.htm,text/html"
+                                    class="hidden"
+                                    onchange="handleHTMLFile(event)">
+
+                                <input
+                                    id="folderInput"
+                                    type="file"
+                                    webkitdirectory
+                                    directory
+                                    multiple
+                                    class="hidden"
+                                    onchange="handleFolder(event)">
+
+                            </div>
+
+                            <div class="deploy-input">
+
+                                <label>
+                                    Paste HTML
+                                </label>
+
+                                <textarea
+                                    id="codeInput"
+                                    class="code-area"
+                                    placeholder="<!DOCTYPE html>
+<html>
+<head>
+    <title>My Website</title>
+</head>
+<body>
+    <h1>Hello 4TECH</h1>
+</body>
+</html>"
+                                    oninput="updatePreview()"></textarea>
+
+                                <small id="fileInfo">
+                                    Kamu juga bisa langsung paste HTML di sini.
+                                </small>
+
+                            </div>
+
+                            <div class="deploy-bottom">
+
+                                <div
+                                    id="tokenWarning"
+                                    class="token-warning">
+                                    1 deployment akan menggunakan 1 token.
+                                </div>
+
+                                <button
+                                    id="deployButton"
+                                    class="deploy-button"
+                                    onclick="deployProject()">
+                                    DEPLOY NOW
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-card">
+
+                            <div class="section-title">
+                                Live Preview
+                            </div>
+
+                            <div class="section-desc">
+                                Preview lokal dari HTML yang kamu masukkan.
+                            </div>
+
+                            <div class="preview-box">
+
+                                <div class="preview-head">
+
+                                    <span class="browser-dot"></span>
+                                    <span class="browser-dot"></span>
+                                    <span class="browser-dot"></span>
+
+                                    <div
+                                        id="previewURL"
+                                        class="preview-url">
+                                        https://project.4tech.web.id
+                                    </div>
+
+                                </div>
+
+                                <div class="preview-content">
+
+                                    <iframe
+                                        id="previewFrame"
+                                        sandbox="allow-scripts">
+                                    </iframe>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- HISTORY -->
+
+                <section
+                    id="page-history"
+                    class="page-section hidden fade">
+
+                    <div class="page-head">
+
+                        <div>
+
+                            <h2>
+                                Deployment History
+                            </h2>
+
+                            <p>
+                                Semua deployment yang tersimpan di browser ini.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="panel">
+
+                        <div class="panel-head">
+
+                            <div>
+
+                                <div class="panel-title">
+                                    Projects
+                                </div>
+
+                                <div class="panel-sub">
+                                    Frontend prototype records.
+                                </div>
+
+                            </div>
+
+                            <button
+                                class="secondary-btn"
+                                onclick="clearHistory()">
+                                Clear History
+                            </button>
+
+                        </div>
+
+                        <div class="history-wrap">
+
+                            <table class="history-table">
+
+                                <thead>
+
+                                    <tr>
+                                        <th>Project</th>
+                                        <th>Status</th>
+                                        <th>Mode</th>
+                                        <th>Date</th>
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="historyBody">
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- SETTINGS -->
+
+                <section
+                    id="page-settings"
+                    class="page-section hidden fade">
+
+                    <div class="page-head">
+
+                        <div>
+
+                            <h2>
+                                Settings
+                            </h2>
+
+                            <p>
+                                Pengaturan akun dan prototype.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="panel">
+
+                        <div class="panel-head">
+
+                            <div>
+
+                                <div class="panel-title">
+                                    Preferences
+                                </div>
+
+                                <div class="panel-sub">
+                                    Pengaturan lokal perangkat.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="panel-body">
+
+                            <div class="settings-list">
+
+                                <div class="setting">
+
+                                    <div>
+
+                                        <div class="setting-title">
+                                            Animations
+                                        </div>
+
+                                        <div class="setting-desc">
+                                            Aktifkan animasi interface.
+                                        </div>
+
+                                    </div>
+
+                                    <button
+                                        id="animationSwitch"
+                                        class="switch on"
+                                        onclick="toggleSetting(this,'animations')">
+
+                                        <span></span>
+
+                                    </button>
+
+                                </div>
+
+                                <div class="setting">
+
+                                    <div>
+
+                                        <div class="setting-title">
+                                            Auto Preview
+                                        </div>
+
+                                        <div class="setting-desc">
+                                            Preview HTML otomatis ketika mengetik.
+                                        </div>
+
+                                    </div>
+
+                                    <button
+                                        id="previewSwitch"
+                                        class="switch on"
+                                        onclick="toggleSetting(this,'preview')">
+
+                                        <span></span>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- ADMIN -->
+
+                <section
+                    id="page-admin"
+                    class="page-section hidden fade">
+
+                    <div class="page-head">
+
+                        <div>
+
+                            <h2>
+                                Admin Dashboard
+                            </h2>
+
+                            <p>
+                                Panel pengelolaan administrator.
+                            </p>
+
+                        </div>
+
+                        <div class="status-badge">
+                            <span class="dot"></span>
+                            ADMIN MODE
+                        </div>
+
+                    </div>
+
+                    <div class="admin-banner">
+
+                        <div>
+
+                            <strong>
+                                Administrator access aktif
+                            </strong>
+
+                            <span>
+                                Admin dapat melakukan deployment tanpa batas token.
+                            </span>
+
+                        </div>
+
+                        <button
+                            class="secondary-btn"
+                            onclick="showPage('deploy')">
+                            Deploy Project
+                        </button>
+
+                    </div>
+
+                    <div class="admin-grid">
+
+                        <div class="admin-stat">
+
+                            <div class="admin-stat-label">
+                                Total Users
+                            </div>
+
+                            <div
+                                id="adminUsers"
+                                class="admin-stat-value">
+                                0
+                            </div>
+
+                        </div>
+
+                        <div class="admin-stat">
+
+                            <div class="admin-stat-label">
+                                Total Deployments
+                            </div>
+
+                            <div
+                                id="adminDeployments"
+                                class="admin-stat-value">
+                                0
+                            </div>
+
+                        </div>
+
+                        <div class="admin-stat">
+
+                            <div class="admin-stat-label">
+                                Admin Tokens
+                            </div>
+
+                            <div class="admin-stat-value">
+                                ∞
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="panel"
+                        style="margin-top:15px">
+
+                        <div class="panel-head">
+
+                            <div>
+
+                                <div class="panel-title">
+                                    All Deployment Records
+                                </div>
+
+                                <div class="panel-sub">
+                                    Data lokal prototype.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="history-wrap">
+
+                            <table class="history-table">
+
+                                <thead>
+
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Project</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="adminHistoryBody">
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</section>
+
+<!-- =======================================================
+     RESULT MODAL
+     ======================================================= -->
+
+<div
+    id="resultModal"
+    class="modal hidden">
+
+    <div class="modal-card">
+
+        <div class="modal-head">
+
+            <strong>
+                Deployment Created
+            </strong>
+
+            <button
+                class="close-btn"
+                onclick="closeModal()">
+                ×
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div class="deploy-result">
+
+                <div class="result-line">
+
+                    <span>
+                        Project
+                    </span>
+
+                    <span id="resultProject">
+                        -
+                    </span>
+
+                </div>
+
+                <div class="result-line">
+
+                    <span>
+                        Preview URL
+                    </span>
+
+                    <span id="resultURL">
+                        -
+                    </span>
+
+                </div>
+
+                <div class="result-line">
+
+                    <span>
+                        Status
+                    </span>
+
+                    <span>
+                        FRONTEND PREVIEW
+                    </span>
+
+                </div>
+
+                <div class="result-line">
+
+                    <span>
+                        Token
+                    </span>
+
+                    <span id="resultToken">
+                        -
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div
+                style="
+                    margin-top:12px;
+                    color:#687587;
+                    font-size:9px;
+                    line-height:1.5;
+                ">
+
+                Ini masih prototype frontend. URL tersebut belum membuat
+                subdomain sungguhan sampai backend/API dan DNS automation
+                dihubungkan.
+
+            </div>
+
+            <button
+                class="primary-btn"
+                style="margin-top:16px"
+                onclick="closeModal()">
+                SELESAI
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="toastContainer"></div>
+
+<!-- =======================================================
+     JAVASCRIPT
+     ======================================================= -->
+
+<script>
+"use strict";
+
+/* =========================================================
+   ADMIN CREDENTIAL
+   =========================================================
+   Credential tetap berada di source prototype.
+   TIDAK dirender ke halaman.
+   Untuk production, pindahkan autentikasi ke backend.
+   ========================================================= */
+
+const ADMIN_USERNAME = "4admin";
+const ADMIN_PASSWORD = "2208";
+
+/* =========================================================
+   CONSTANTS
+   ========================================================= */
+
+const DOMAIN_SUFFIX = ".4tech.web.id";
+const DEFAULT_TOKENS = 3;
+const STORAGE_USERS = "4tech_users_v2";
+const STORAGE_SESSION = "4tech_session_v2";
+const STORAGE_DEPLOYS = "4tech_deployments_v2";
+const STORAGE_SETTINGS = "4tech_settings_v2";
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let currentUser = null;
+let currentPage = "dashboard";
+let selectedHTML = "";
+let settings = {
+    animations:true,
+    preview:true
+};
+
+/* =========================================================
+   DOM HELPERS
+   ========================================================= */
+
+function $(id){
+    return document.getElementById(id);
+}
+
+function qs(selector){
+    return document.querySelector(selector);
+}
+
+function qsa(selector){
+    return document.querySelectorAll(selector);
+}
+
+/* =========================================================
+   STORAGE
+   ========================================================= */
+
+function getUsers(){
+    try{
+        return JSON.parse(localStorage.getItem(STORAGE_USERS) || "[]");
+    }catch(error){
+        return [];
+    }
+}
+
+function saveUsers(users){
+    localStorage.setItem(STORAGE_USERS,JSON.stringify(users));
+}
+
+function getDeployments(){
+    try{
+        return JSON.parse(localStorage.getItem(STORAGE_DEPLOYS) || "[]");
+    }catch(error){
+        return [];
+    }
+}
+
+function saveDeployments(data){
+    localStorage.setItem(STORAGE_DEPLOYS,JSON.stringify(data));
+}
+
+function getSettings(){
+    try{
+        return {
+            ...settings,
+            ...JSON.parse(
+                localStorage.getItem(STORAGE_SETTINGS) || "{}"
+            )
+        };
+    }catch(error){
+        return {...settings};
+    }
+}
+
+function saveSettings(){
+    localStorage.setItem(
+        STORAGE_SETTINGS,
+        JSON.stringify(settings)
+    );
+}
+
+/* =========================================================
+   SESSION
+   ========================================================= */
+
+function saveSession(user){
+    localStorage.setItem(
+        STORAGE_SESSION,
+        JSON.stringify(user)
+    );
+}
+
+function loadSession(){
+    try{
+        return JSON.parse(
+            localStorage.getItem(STORAGE_SESSION)
+        );
+    }catch(error){
+        return null;
+    }
+}
+
+function clearSession(){
+    localStorage.removeItem(STORAGE_SESSION);
+}
+
+/* =========================================================
+   DATE
+   ========================================================= */
+
+function todayKey(){
+    const now = new Date();
+
+    return [
+        now.getFullYear(),
+        String(now.getMonth()+1).padStart(2,"0"),
+        String(now.getDate()).padStart(2,"0")
+    ].join("-");
+}
+
+function formatDate(value){
+    const date = new Date(value);
+
+    return date.toLocaleString(
+        "id-ID",
+        {
+            day:"2-digit",
+            month:"short",
+            year:"numeric",
+            hour:"2-digit",
+            minute:"2-digit"
+        }
+    );
+}
+
+/* =========================================================
+   ID
+   ========================================================= */
+
+function randomId(){
+    return (
+        Date.now().toString(36) +
+        Math.random().toString(36).slice(2,8)
+    ).toUpperCase();
+}
+
+/* =========================================================
+   ESCAPE
+   ========================================================= */
+
+function escapeHTML(value){
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+/* =========================================================
+   AUTH SWITCH
+   ========================================================= */
+
+function switchAuth(type){
+
+    const login = $("loginForm");
+    const register = $("registerForm");
+
+    const loginTab = $("loginTab");
+    const registerTab = $("registerTab");
+
+    clearAuthMessage();
+
+    if(type === "login"){
+
+        login.classList.remove("hidden");
+        register.classList.add("hidden");
+
+        loginTab.classList.add("active");
+        registerTab.classList.remove("active");
+
+    }else{
+
+        login.classList.add("hidden");
+        register.classList.remove("hidden");
+
+        loginTab.classList.remove("active");
+        registerTab.classList.add("active");
+
+    }
+}
+
+/* =========================================================
+   AUTH MESSAGE
+   ========================================================= */
+
+function showAuthMessage(message,type="error"){
+
+    const element = $("authMessage");
+
+    element.textContent = message;
+
+    element.className =
+        "message show " + type;
+}
+
+function clearAuthMessage(){
+
+    const element = $("authMessage");
+
+    element.textContent = "";
+
+    element.className = "message";
+}
+
+/* =========================================================
+   PASSWORD
+   ========================================================= */
+
+function togglePassword(id,button){
+
+    const input = $(id);
+
+    if(input.type === "password"){
+
+        input.type = "text";
+        button.textContent = "🙈";
+
+    }else{
+
+        input.type = "password";
+        button.textContent = "👁";
+
+    }
+}
+
+/* =========================================================
+   REGISTER
+   ========================================================= */
+
+function handleRegister(event){
+
+    event.preventDefault();
+
+    const name =
+        $("registerName").value.trim();
+
+    const email =
+        $("registerEmail").value.trim().toLowerCase();
+
+    const password =
+        $("registerPassword").value;
+
+    if(name.length < 2){
+
+        showAuthMessage(
+            "Nama minimal 2 karakter."
+        );
+
+        return;
+    }
+
+    if(!email.includes("@")){
+
+        showAuthMessage(
+            "Masukkan Gmail yang valid."
+        );
+
+        return;
+    }
+
+    if(password.length < 6){
+
+        showAuthMessage(
+            "Password minimal 6 karakter."
+        );
+
+        return;
+    }
+
+    const users = getUsers();
+
+    const exists = users.some(
+        user =>
+            user.email.toLowerCase() === email
+    );
+
+    if(exists){
+
+        showAuthMessage(
+            "Email tersebut sudah terdaftar."
+        );
+
+        return;
+    }
+
+    const user = {
+        id:randomId(),
+        name:name,
+        email:email,
+        password:password,
+        tokens:DEFAULT_TOKENS,
+        tokenDate:todayKey(),
+        createdAt:new Date().toISOString()
+    };
+
+    users.push(user);
+
+    saveUsers(users);
+
+    showAuthMessage(
+        "Akun berhasil dibuat. Silakan login.",
+        "success"
+    );
+
+    $("registerForm").reset();
+
+    setTimeout(
+        () => switchAuth("login"),
+        700
+    );
+}
+
+/* =========================================================
+   ADMIN LOGIN
+   ========================================================= */
+
+function tryAdminLogin(identity,password){
+
+    if(
+        identity === ADMIN_USERNAME &&
+        password === ADMIN_PASSWORD
+    ){
+
+        return {
+            id:"ADMIN",
+            name:"Administrator",
+            email:"",
+            role:"admin",
+            tokens:null,
+            tokenDate:todayKey(),
+            createdAt:new Date().toISOString()
+        };
+    }
+
+    return null;
+}
+
+/* =========================================================
+   USER TOKEN RESET
+   ========================================================= */
+
+function refreshUserTokens(user){
+
+    if(!user){
+        return user;
+    }
+
+    if(user.role === "admin"){
+        return user;
+    }
+
+    const today = todayKey();
+
+    if(user.tokenDate !== today){
+
+        if(Number(user.tokens) < DEFAULT_TOKENS){
+
+            user.tokens = DEFAULT_TOKENS;
+
+        }
+
+        user.tokenDate = today;
+
+        updateStoredUser(user);
+    }
+
+    return user;
+}
+
+/* =========================================================
+   UPDATE USER
+   ========================================================= */
+
+function updateStoredUser(user){
+
+    if(user.role === "admin"){
+        return;
+    }
+
+    const users = getUsers();
+
+    const index =
+        users.findIndex(
+            item => item.id === user.id
+        );
+
+    if(index === -1){
+        return;
+    }
+
+    users[index] = user;
+
+    saveUsers(users);
+}
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+function handleLogin(event){
+
+    event.preventDefault();
+
+    const identity =
+        $("loginIdentity").value.trim();
+
+    const password =
+        $("loginPassword").value;
+
+    const admin =
+        tryAdminLogin(
+            identity,
+            password
+        );
+
+    if(admin){
+
+        loginSuccess(admin);
+
+        return;
+    }
+
+    const users = getUsers();
+
+    const user =
+        users.find(
+            item =>
+                (
+                    item.email.toLowerCase() ===
+                    identity.toLowerCase()
+                ) &&
+                item.password === password
+        );
+
+    if(!user){
+
+        showAuthMessage(
+            "Username/Gmail atau password salah."
+        );
+
+        return;
+    }
+
+    refreshUserTokens(user);
+
+    loginSuccess(user);
+}
+
+/* =========================================================
+   LOGIN SUCCESS
+   ========================================================= */
+
+function loginSuccess(user){
+
+    currentUser = user;
+
+    saveSession(user);
+
+    $("loginForm").reset();
+
+    $("authScreen").classList.add("hidden");
+
+    $("app").classList.remove("hidden");
+
+    setupUserUI();
+
+    showPage("dashboard");
+
+    refreshEverything();
+
+    toast(
+        "Login berhasil",
+        "Selamat datang di 4TECH DEPLOYERS."
+    );
+}
+
+/* =========================================================
+   SETUP USER UI
+   ========================================================= */
+
+function setupUserUI(){
+
+    if(!currentUser){
+        return;
+    }
+
+    const name =
+        currentUser.role === "admin"
+        ? "Administrator"
+        : currentUser.name;
+
+    $("topUsername").textContent = name;
+
+    $("topRole").textContent =
+        currentUser.role === "admin"
+        ? "ADMIN"
+        : "USER";
+
+    $("avatar").textContent =
+        name
+            .slice(0,2)
+            .toUpperCase();
+
+    $("statRole").textContent =
+        currentUser.role === "admin"
+        ? "ADMIN"
+        : "USER";
+
+    if(currentUser.role === "admin"){
+
+        $("adminNav").classList.remove("hidden");
+
+    }else{
+
+        $("adminNav").classList.add("hidden");
+
+    }
+}
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+function logout(){
+
+    clearSession();
+
+    currentUser = null;
+
+    $("app").classList.add("hidden");
+
+    $("authScreen").classList.remove("hidden");
+
+    switchAuth("login");
+
+    toast(
+        "Logout",
+        "Kamu telah keluar dari akun."
+    );
+}
+
+/* =========================================================
+   PAGE NAVIGATION
+   ========================================================= */
+
+function showPage(page){
+
+    if(
+        page === "admin" &&
+        (!currentUser || currentUser.role !== "admin")
+    ){
+
+        showPage("dashboard");
+
+        return;
+    }
+
+    currentPage = page;
+
+    qsa(".page-section").forEach(
+        section => {
+            section.classList.add("hidden");
+        }
+    );
+
+    const target =
+        $("page-" + page);
+
+    if(target){
+
+        target.classList.remove("hidden");
+
+        if(settings.animations){
+
+            target.classList.remove("fade");
+
+            void target.offsetWidth;
+
+            target.classList.add("fade");
+
+        }
+    }
+
+    qsa(".nav-item").forEach(
+        item => {
+
+            item.classList.toggle(
+                "active",
+                item.dataset.page === page
+            );
+
+        }
+    );
+
+    if(window.innerWidth <= 900){
+
+        $("sidebar").classList.remove("open");
+
+    }
+
+    if(page === "history"){
+
+        renderHistory();
+
+    }
+
+    if(page === "admin"){
+
+        renderAdmin();
+
+    }
+
+    if(page === "dashboard"){
+
+        renderActivity();
+
+    }
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+function toggleSidebar(){
+
+    $("sidebar")
+        .classList
+        .toggle("open");
+}
+
+/* =========================================================
+   DOMAIN
+   ========================================================= */
+
+function sanitizeProjectName(value){
+
+    return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9-]/g,"-")
+        .replace(/-+/g,"-")
+        .replace(/^-|-$/g,"");
+}
+
+function validProjectName(value){
+
+    if(!value){
+        return false;
+    }
+
+    if(value.length < 2){
+        return false;
+    }
+
+    if(value.length > 40){
+        return false;
+    }
+
+    return /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(
+        value
+    );
+}
+
+function updateDomainPreview(){
+
+    const raw =
+        $("projectName").value;
+
+    const clean =
+        sanitizeProjectName(raw);
+
+    if(clean !== raw){
+
+        $("projectName").value = clean;
+
+    }
+
+    const name =
+        clean || "project";
+
+    $("domainSuffix").textContent =
+        DOMAIN_SUFFIX;
+
+    $("previewURL").textContent =
+        "https://" +
+        name +
+        DOMAIN_SUFFIX;
+}
+
+/* =========================================================
+   HTML FILE
+   ========================================================= */
+
+function handleHTMLFile(event){
+
+    const file =
+        event.target.files[0];
+
+    if(!file){
+        return;
+    }
+
+    if(
+        !file.name.toLowerCase().endsWith(".html") &&
+        !file.name.toLowerCase().endsWith(".htm")
+    ){
+
+        toast(
+            "File tidak valid",
+            "Pilih file HTML."
+        );
+
+        return;
+    }
+
+    const reader =
+        new FileReader();
+
+    reader.onload = function(){
+
+        selectedHTML =
+            reader.result || "";
+
+        $("codeInput").value =
+            selectedHTML;
+
+        $("fileInfo").textContent =
+            "File dipilih: " +
+            file.name;
+
+        updatePreview();
+
+        toast(
+            "HTML berhasil dimuat",
+            file.name
+        );
+    };
+
+    reader.onerror = function(){
+
+        toast(
+            "Gagal membaca file",
+            "Coba pilih file lain."
+        );
+
+    };
+
+    reader.readAsText(file);
+}
+
+/* =========================================================
+   FOLDER
+   ========================================================= */
+
+function handleFolder(event){
+
+    const files =
+        Array.from(
+            event.target.files || []
+        );
+
+    if(!files.length){
+        return;
+    }
+
+    let htmlFile =
+        files.find(
+            file =>
+                file.name.toLowerCase() ===
+                "index.html"
+        );
+
+    if(!htmlFile){
+
+        htmlFile =
+            files.find(
+                file =>
+                    file.name
+                        .toLowerCase()
+                        .endsWith(".html")
+            );
+    }
+
+    if(!htmlFile){
+
+        toast(
+            "HTML tidak ditemukan",
+            "Folder harus memiliki file HTML."
+        );
+
+        return;
+    }
+
+    const reader =
+        new FileReader();
+
+    reader.onload = function(){
+
+        selectedHTML =
+            reader.result || "";
+
+        $("codeInput").value =
+            selectedHTML;
+
+        $("fileInfo").textContent =
+            "Folder dipilih: " +
+            files.length +
+            " file • Entry: " +
+            htmlFile.name;
+
+        updatePreview();
+
+        toast(
+            "Folder berhasil dimuat",
+            "Entry HTML: " + htmlFile.name
+        );
+    };
+
+    reader.readAsText(htmlFile);
+}
+
+/* =========================================================
+   CLEAR CODE
+   ========================================================= */
+
+function clearCode(){
+
+    selectedHTML = "";
+
+    $("codeInput").value = "";
+
+    $("fileInfo").textContent =
+        "Kamu juga bisa langsung paste HTML di sini.";
+
+    updatePreview();
+
+    toast(
+        "Editor dibersihkan",
+        "HTML source sudah dikosongkan."
+    );
+}
+
+/* =========================================================
+   PREVIEW
+   ========================================================= */
+
+function updatePreview(){
+
+    if(!settings.preview){
+        return;
+    }
+
+    const html =
+        $("codeInput").value;
+
+    const frame =
+        $("previewFrame");
+
+    try{
+
+        const doc =
+            frame.contentDocument ||
+            frame.contentWindow.document;
+
+        doc.open();
+
+        doc.write(html);
+
+        doc.close();
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+}
+
+/* =========================================================
+   TOKEN
+   ========================================================= */
+
+function getCurrentTokens(){
+
+    if(!currentUser){
+        return 0;
+    }
+
+    if(currentUser.role === "admin"){
+        return Infinity;
+    }
+
+    refreshUserTokens(currentUser);
+
+    return Number(currentUser.tokens || 0);
+}
+
+/* =========================================================
+   DEPLOY VALIDATION
+   ========================================================= */
+
+function validateDeployment(){
+
+    const rawName =
+        $("projectName").value.trim();
+
+    const name =
+        sanitizeProjectName(rawName);
+
+    const html =
+        $("codeInput").value.trim();
+
+    if(!validProjectName(name)){
+
+        toast(
+            "Nama project tidak valid",
+            "Gunakan minimal 2 karakter: a-z, 0-9, -"
+        );
+
+        $("projectName").focus();
+
+        return null;
+    }
+
+    if(!html){
+
+        toast(
+            "HTML kosong",
+            "Paste HTML atau pilih file terlebih dahulu."
+        );
+
+        $("codeInput").focus();
+
+        return null;
+    }
+
+    if(
+        !html.toLowerCase().includes("<html") &&
+        !html.toLowerCase().includes("<!doctype")
+    ){
+
+        toast(
+            "HTML terlihat tidak lengkap",
+            "Pastikan source HTML sudah benar."
+        );
+
+        return null;
+    }
+
+    return {
+        name,
+        html
+    };
+}
+
+/* =========================================================
+   DUPLICATE CHECK
+   ========================================================= */
+
+function projectExists(name){
+
+    const deployments =
+        getDeployments();
+
+    return deployments.some(
+        deployment =>
+            deployment.ownerId === currentUser.id &&
+            deployment.project === name
+    );
+}
+
+/* =========================================================
+   DEPLOY
+   ========================================================= */
+
+function deployProject(){
+
+    if(!currentUser){
+
+        toast(
+            "Session expired",
+            "Silakan login kembali."
+        );
+
+        return;
+    }
+
+    const data =
+        validateDeployment();
+
+    if(!data){
+        return;
+    }
+
+    if(projectExists(data.name)){
+
+        toast(
+            "Project sudah ada",
+            "Gunakan nama subdomain lain."
+        );
+
+        return;
+    }
+
+    const tokens =
+        getCurrentTokens();
+
+    if(
+        currentUser.role !== "admin" &&
+        tokens <= 0
+    ){
+
+        toast(
+            "Token habis",
+            "Token akan kembali maksimal 3 pada hari berikutnya."
+        );
+
+        return;
+    }
+
+    const button =
+        $("deployButton");
+
+    button.disabled = true;
+
+    button.textContent =
+        "DEPLOYING...";
+
+    setTimeout(
+        () => finishDeployment(data),
+        900
+    );
+}
+
+/* =========================================================
+   FINISH DEPLOY
+   ========================================================= */
+
+function finishDeployment(data){
+
+    const isAdmin =
+        currentUser.role === "admin";
+
+    const deployments =
+        getDeployments();
+
+    const record = {
+
+        id:randomId(),
+
+        ownerId:currentUser.id,
+
+        ownerName:
+            isAdmin
+            ? "Administrator"
+            : currentUser.name,
+
+        ownerEmail:
+            currentUser.email || "",
+
+        project:data.name,
+
+        domain:
+            "https://" +
+            data.name +
+            DOMAIN_SUFFIX,
+
+        html:data.html,
+
+        status:"FRONTEND_PREVIEW",
+
+        mode:
+            isAdmin
+            ? "ADMIN"
+            : "USER",
+
+        createdAt:
+            new Date().toISOString()
+
+    };
+
+    deployments.unshift(record);
+
+    saveDeployments(deployments);
+
+    if(!isAdmin){
+
+        currentUser.tokens =
+            Math.max(
+                0,
+                Number(currentUser.tokens) - 1
+            );
+
+        currentUser.tokenDate =
+            todayKey();
+
+        updateStoredUser(currentUser);
+
+        saveSession(currentUser);
+    }
+
+    $("deployButton").disabled = false;
+
+    $("deployButton").textContent =
+        "DEPLOY NOW";
+
+    refreshEverything();
+
+    showDeploymentResult(record);
+
+    toast(
+        "Deployment berhasil",
+        "Prototype deployment telah dibuat."
+    );
+}
+
+/* =========================================================
+   RESULT
+   ========================================================= */
+
+function showDeploymentResult(record){
+
+    $("resultProject").textContent =
+        record.project;
+
+    $("resultURL").textContent =
+        record.domain;
+
+    $("resultToken").textContent =
+        currentUser.role === "admin"
+        ? "UNLIMITED"
+        : "1 TOKEN USED";
+
+    $("resultModal")
+        .classList
+        .remove("hidden");
+}
+
+function closeModal(){
+
+    $("resultModal")
+        .classList
+        .add("hidden");
+}
+
+/* =========================================================
+   REFRESH EVERYTHING
+   ========================================================= */
+
+function refreshEverything(){
+
+    if(!currentUser){
+        return;
+    }
+
+    if(currentUser.role !== "admin"){
+
+        refreshUserTokens(currentUser);
+
+        saveSession(currentUser);
+    }
+
+    updateStats();
+
+    renderHistory();
+
+    renderActivity();
+
+    if(currentUser.role === "admin"){
+
+        renderAdmin();
+
+    }
+
+    updateDomainPreview();
+
+    const html =
+        $("codeInput").value;
+
+    if(html){
+
+        updatePreview();
+
+    }
+}
+
+/* =========================================================
+   STATS
+   ========================================================= */
+
+function updateStats(){
+
+    const deployments =
+        getDeployments();
+
+    const ownDeployments =
+        deployments.filter(
+            deployment =>
+                deployment.ownerId ===
+                currentUser.id
+        );
+
+    const projects =
+        new Set(
+            ownDeployments.map(
+                deployment =>
+                    deployment.project
+            )
+        ).size;
+
+    const tokens =
+        getCurrentTokens();
+
+    $("statTokens").textContent =
+        tokens === Infinity
+        ? "∞"
+        : tokens;
+
+    $("statTokenText").textContent =
+        tokens === Infinity
+        ? "Unlimited token"
+        : "Token tersedia";
+
+    $("statDeploys").textContent =
+        ownDeployments.length;
+
+    $("statProjects").textContent =
+        projects;
+
+    $("statRole").textContent =
+        currentUser.role === "admin"
+        ? "ADMIN"
+        : "USER";
+}
+
+/* =========================================================
+   HISTORY
+   ========================================================= */
+
+function renderHistory(){
+
+    const body =
+        $("historyBody");
+
+    const deployments =
+        getDeployments()
+            .filter(
+                deployment =>
+                    deployment.ownerId ===
+                    currentUser.id
+            );
+
+    if(!deployments.length){
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    <div class="empty">
+                        <div class="empty-icon">◷</div>
+                        <strong>Belum ada deployment</strong>
+                        <span>Deployment kamu akan muncul di sini.</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    body.innerHTML =
+        deployments
+            .map(
+                deployment => `
+                    <tr>
+                        <td>
+                            <div class="project-name">
+                                ${escapeHTML(deployment.project)}
+                            </div>
+                            <div class="project-url">
+                                ${escapeHTML(deployment.domain)}
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="status preview">
+                                FRONTEND
+                            </span>
+                        </td>
+
+                        <td>
+                            ${escapeHTML(deployment.mode)}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                formatDate(
+                                    deployment.createdAt
+                                )
+                            )}
+                        </td>
+                    </tr>
+                `
+            )
+            .join("");
+}
+
+/* =========================================================
+   ACTIVITY
+   ========================================================= */
+
+function renderActivity(){
+
+    const container =
+        $("activityList");
+
+    const deployments =
+        getDeployments()
+            .filter(
+                deployment =>
+                    deployment.ownerId ===
+                    currentUser.id
+            )
+            .slice(0,5);
+
+    if(!deployments.length){
+
+        container.innerHTML = `
+            <div class="empty" style="padding:25px 5px">
+                <div class="empty-icon">◷</div>
+                <strong>Belum ada aktivitas</strong>
+                <span>Mulai deployment pertama kamu.</span>
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        `<div class="activity-list">` +
+        deployments
+            .map(
+                deployment => `
+                    <div class="activity">
+
+                        <div class="activity-icon">
+                            ↥
+                        </div>
+
+                        <div class="activity-content">
+
+                            <strong>
+                                ${escapeHTML(
+                                    deployment.project
+                                )}
+                            </strong>
+
+                            <span>
+                                ${escapeHTML(
+                                    formatDate(
+                                        deployment.createdAt
+                                    )
+                                )}
+                            </span>
+
+                        </div>
+
+                    </div>
+                `
+            )
+            .join("") +
+        `</div>`;
+}
+
+/* =========================================================
+   ADMIN
+   ========================================================= */
+
+function renderAdmin(){
+
+    if(
+        !currentUser ||
+        currentUser.role !== "admin"
+    ){
+        return;
+    }
+
+    const users =
+        getUsers();
+
+    const deployments =
+        getDeployments();
+
+    $("adminUsers").textContent =
+        users.length;
+
+    $("adminDeployments").textContent =
+        deployments.length;
+
+    const body =
+        $("adminHistoryBody");
+
+    if(!deployments.length){
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    <div class="empty">
+                        <div class="empty-icon">◆</div>
+                        <strong>Belum ada deployment</strong>
+                        <span>Data deployment akan muncul di sini.</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    body.innerHTML =
+        deployments
+            .map(
+                deployment => `
+                    <tr>
+
+                        <td>
+                            <div class="project-name">
+                                ${escapeHTML(
+                                    deployment.ownerName
+                                )}
+                            </div>
+
+                            <div class="project-url">
+                                ${escapeHTML(
+                                    deployment.ownerEmail ||
+                                    "ADMIN"
+                                )}
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="project-name">
+                                ${escapeHTML(
+                                    deployment.project
+                                )}
+                            </div>
+
+                            <div class="project-url">
+                                ${escapeHTML(
+                                    deployment.domain
+                                )}
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="status preview">
+                                FRONTEND
+                            </span>
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                formatDate(
+                                    deployment.createdAt
+                                )
+                            )}
+                        </td>
+
+                    </tr>
+                `
+            )
+            .join("");
+}
+
+/* =========================================================
+   CLEAR HISTORY
+   ========================================================= */
+
+function clearHistory(){
+
+    if(!currentUser){
+        return;
+    }
+
+    const own =
+        getDeployments().filter(
+            deployment =>
+                deployment.ownerId !==
+                currentUser.id
+        );
+
+    saveDeployments(own);
+
+    refreshEverything();
+
+    toast(
+        "History dibersihkan",
+        "Deployment akun ini telah dihapus dari prototype."
+    );
+}
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+
+function toggleSetting(button,key){
+
+    settings[key] =
+        !settings[key];
+
+    saveSettings();
+
+    button.classList.toggle(
+        "on",
+        settings[key]
+    );
+
+    if(key === "preview" && settings[key]){
+
+        updatePreview();
+
+    }
+
+    toast(
+        "Setting diperbarui",
+        key + ": " +
+        (settings[key] ? "ON" : "OFF")
+    );
+}
+
+function loadSettings(){
+
+    settings =
+        getSettings();
+
+    $("animationSwitch")
+        .classList
+        .toggle(
+            "on",
+            settings.animations
+        );
+
+    $("previewSwitch")
+        .classList
+        .toggle(
+            "on",
+            settings.preview
+        );
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+function toast(title,message){
+
+    const container =
+        $("toastContainer");
+
+    const item =
+        document.createElement("div");
+
+    item.className =
+        "toast";
+
+    item.innerHTML = `
+        <strong>
+            ${escapeHTML(title)}
+        </strong>
+
+        <span>
+            ${escapeHTML(message)}
+        </span>
+    `;
+
+    container.appendChild(item);
+
+    setTimeout(
+        () => {
+            item.style.opacity = "0";
+            item.style.transform = "translateY(5px)";
+
+            setTimeout(
+                () => item.remove(),
+                250
+            );
+
+        },
+        3200
+    );
+}
+
+/* =========================================================
+   KEYBOARD
+   ========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if(event.key === "Escape"){
+
+            closeModal();
+
+            if(window.innerWidth <= 900){
+
+                $("sidebar")
+                    .classList
+                    .remove("open");
+
+            }
+
+        }
+
+        if(
+            (event.ctrlKey || event.metaKey) &&
+            event.key.toLowerCase() === "enter"
+        ){
+
+            if(
+                currentPage === "deploy"
+            ){
+
+                deployProject();
+
+            }
+
+        }
+
+    }
+);
+
+/* =========================================================
+   MODAL CLICK OUTSIDE
+   ========================================================= */
+
+$("resultModal")
+    .addEventListener(
+        "click",
+        event => {
+
+            if(
+                event.target ===
+                $("resultModal")
+            ){
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+/* =========================================================
+   DOMAIN INPUT EVENTS
+   ========================================================= */
+
+$("projectName")
+    .addEventListener(
+        "blur",
+        () => {
+
+            const value =
+                sanitizeProjectName(
+                    $("projectName").value
+                );
+
+            $("projectName").value =
+                value;
+
+            updateDomainPreview();
+
+        }
+    );
+
+/* =========================================================
+   INITIAL SESSION
+   ========================================================= */
+
+function initialize(){
+
+    loadSettings();
+
+    const session =
+        loadSession();
+
+    if(session){
+
+        currentUser =
+            session;
+
+        if(
+            currentUser.role !== "admin"
+        ){
+
+            refreshUserTokens(
+                currentUser
+            );
+
+        }
+
+        $("authScreen")
+            .classList
+            .add("hidden");
+
+        $("app")
+            .classList
+            .remove("hidden");
+
+        setupUserUI();
+
+        showPage("dashboard");
+
+        refreshEverything();
+
+    }else{
+
+        $("authScreen")
+            .classList
+            .remove("hidden");
+
+        $("app")
+            .classList
+            .add("hidden");
+
+    }
+
+    updateDomainPreview();
+}
+
+initialize();
+
+/* =========================================================
+   END
+   ========================================================= */
+</script>
+
+</body>
+</html>
