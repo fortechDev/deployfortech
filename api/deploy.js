@@ -1,8 +1,4 @@
 export default async function handler(req, res) {
-  // ================================
-  // 4TECH DEPLOYERS - API V1
-  // ================================
-
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
@@ -11,40 +7,29 @@ export default async function handler(req, res) {
   }
 
   try {
-    // -------------------------------
-    // CHECK TOKEN
-    // -------------------------------
     const token = process.env.VERCEL_TOKEN;
 
     if (!token) {
       return res.status(500).json({
         success: false,
-        message: "VERCEL_TOKEN belum tersedia di Environment Variables."
+        message: "VERCEL_TOKEN belum tersedia."
       });
     }
 
-    // -------------------------------
-    // READ REQUEST
-    // -------------------------------
-    const body = req.body || {};
+    const { projectName, html } = req.body || {};
 
-    const projectName = String(body.projectName || "").trim();
-    const html = String(body.html || "");
-
-    // -------------------------------
-    // VALIDATE PROJECT NAME
-    // -------------------------------
-    if (!projectName) {
+    if (!projectName || !html) {
       return res.status(400).json({
         success: false,
-        message: "Nama project wajib diisi."
+        message: "projectName dan html wajib diisi."
       });
     }
 
     if (!/^[a-z0-9-]+$/i.test(projectName)) {
       return res.status(400).json({
         success: false,
-        message: "Nama project hanya boleh menggunakan huruf, angka, dan tanda -."
+        message:
+          "Nama project hanya boleh huruf, angka, dan tanda -."
       });
     }
 
@@ -55,99 +40,133 @@ export default async function handler(req, res) {
       });
     }
 
-    // -------------------------------
-    // VALIDATE HTML
-    // -------------------------------
-    if (!html.trim()) {
-      return res.status(400).json({
-        success: false,
-        message: "HTML tidak boleh kosong."
-      });
-    }
-
     if (html.length > 5 * 1024 * 1024) {
       return res.status(413).json({
         success: false,
-        message: "Ukuran HTML terlalu besar. Maksimal 5 MB."
+        message: "HTML maksimal 5 MB."
       });
     }
 
-    // -------------------------------
-    // CREATE FILE DIGEST
-    // -------------------------------
-    const encoder = new TextEncoder();
+    /*
+     * 1. Pastikan project Vercel tersedia.
+     */
 
-    const data = encoder.encode(html);
-
-    const hashBuffer = await crypto.subtle.digest(
-      "SHA-1",
-      data
-    );
-
-    const hashArray = Array.from(
-      new Uint8Array(hashBuffer)
-    );
-
-    const sha = hashArray
-      .map(byte => byte.toString(16).padStart(2, "0"))
-      .join("");
-
-    // -------------------------------
-    // UPLOAD FILE TO VERCEL
-    // -------------------------------
-    const uploadResponse = await fetch(
-      "https://api.vercel.com/v2/now/files",
+    const projectResponse = await fetch(
+      `https://api.vercel.com/v9/projects/${encodeURIComponent(projectName)}`,
       {
-        method: "POST",
-
         headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "text/html; charset=utf-8",
-          "x-vercel-digest": sha
-        },
-
-        body: data
+          Authorization: `Bearer ${token}`
+        }
       }
     );
 
-    const uploadText = await uploadResponse.text();
+    let project;
+
+    if (projectResponse.ok) {
+      project = await projectResponse.json();
+    } else if (projectResponse.status === 404) {
+      const createProjectResponse = await fetch(
+        "https://api.vercel.com/v10/projects",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: projectName
+          })
+        }
+      );
+
+      const createText =
+        await createProjectResponse.text();
+
+      if (!createProjectResponse.ok) {
+        return res.status(500).json({
+          success: false,
+          stage: "create-project",
+          message: "Gagal membuat project Vercel.",
+          details: createText
+        });
+      }
+
+      project = JSON.parse(createText);
+    } else {
+      const errorText =
+        await projectResponse.text();
+
+      return res.status(500).json({
+        success: false,
+        stage: "get-project",
+        message: "Gagal mengecek project.",
+        details: errorText
+      });
+    }
+
+    /*
+     * 2. Upload index.html.
+     */
+
+    const fileBuffer =
+      new TextEncoder().encode(html);
+
+    const uploadResponse = await fetch(
+      "https://api.vercel.com/v2/files",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "text/html"
+        },
+        body: fileBuffer
+      }
+    );
+
+    const uploadText =
+      await uploadResponse.text();
 
     if (!uploadResponse.ok) {
-      return res.status(uploadResponse.status).json({
+      return res.status(500).json({
         success: false,
         stage: "upload",
-        message: "Upload file ke Vercel gagal.",
+        message: "Upload file gagal.",
         details: uploadText
       });
     }
 
-    // -------------------------------
-    // CREATE DEPLOYMENT
-    // -------------------------------
+    let uploadData;
+
+    try {
+      uploadData = JSON.parse(uploadText);
+    } catch {
+      uploadData = {};
+    }
+
+    /*
+     * 3. Buat deployment.
+     */
+
     const deploymentResponse = await fetch(
-      "https://api.vercel.com/v12/now/deployments",
+      "https://api.vercel.com/v13/deployments",
       {
         method: "POST",
-
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         },
-
         body: JSON.stringify({
           name: projectName,
+          project: project.id,
 
           files: [
             {
               file: "index.html",
-              sha: sha,
-              size: data.byteLength
+              data: uploadData
             }
           ],
 
-          projectSettings: {
-            framework: null
-          }
+          target: "production"
         })
       }
     );
@@ -155,65 +174,54 @@ export default async function handler(req, res) {
     const deploymentText =
       await deploymentResponse.text();
 
-    let deploymentData;
+    let deployment;
 
     try {
-      deploymentData =
+      deployment =
         JSON.parse(deploymentText);
     } catch {
-      deploymentData = {
+      deployment = {
         raw: deploymentText
       };
     }
 
     if (!deploymentResponse.ok) {
-      return res.status(deploymentResponse.status).json({
+      return res.status(500).json({
         success: false,
         stage: "deployment",
-        message: "Deployment Vercel gagal.",
-        details: deploymentData
+        message: "Deployment gagal.",
+        details: deployment
       });
     }
 
-    // -------------------------------
-    // DEPLOYMENT URL
-    // -------------------------------
+    /*
+     * 4. Hasil deployment.
+     */
+
     const deploymentUrl =
-      deploymentData.url
-        ? `https://${deploymentData.url}`
+      deployment.url
+        ? `https://${deployment.url}`
         : null;
 
-    // -------------------------------
-    // RESPONSE
-    // -------------------------------
     return res.status(200).json({
       success: true,
-
-      message:
-        "Deployment berhasil dibuat.",
-
-      projectName: projectName,
-
+      message: "Deployment berhasil.",
+      projectName,
       deploymentId:
-        deploymentData.id || null,
-
-      url:
-        deploymentUrl,
-
-      raw:
-        deploymentData
+        deployment.id || null,
+      url: deploymentUrl,
+      alias:
+        deployment.alias || [],
+      projectId:
+        project.id || null
     });
 
   } catch (error) {
-
-    console.error(
-      "4TECH DEPLOY ERROR:",
-      error
-    );
+    console.error(error);
 
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error.",
+      message: "Internal Server Error",
       error: error.message
     });
   }
